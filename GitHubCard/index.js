@@ -1,62 +1,54 @@
 
-/* Step 1: using axios, send a GET request to the following URL 
+/* Step 1: using axios, send a GET request to the following URL
            (replacing the palceholder with your Github name):
            https://api.github.com/users/<your name>
 */
-
-axios.get('https://api.github.com/users/chandlerben')
+axios.get(`https://api.github.com/users/chandlerben`)
   .then(response => {
-    console.log(response)
     const myData = response.data
     console.log(myData)
-    const cards = document.querySelector('.cards')
-    const cardInfo = cardMaker(myData)
-    cards.appendChild(cardInfo)
+    const cardsElement = document.querySelector('.cards')
+    cardsElement.appendChild(cardCreation(myData))
+    followersUsernames.forEach(element => {
+      axios.get(`https://api.github.com/users/${element}`)
+        .then(response => {
+          const userData = response.data;
+          cardsElement.appendChild(cardCreation(userData))
+        })
+    })
+
   })
   .catch(error => {
-    console.log(error)
+    console.log(`There was an error: ${error}`)
   })
 
-/* Step 2: Inspect and study the data coming back, this is YOUR 
-   github info! You will need to understand the structure of this 
-   data in order to use it to build your component function 
+
+/* Step 2: Inspect and study the data coming back, this is YOUR
+   github info! You will need to understand the structure of this
+   data in order to use it to build your component function
 
    Skip to Step 3.
 */
 
-/* Step 4: Pass the data received from Github into your function, 
+/* Step 4: Pass the data received from Github into your function,
            create a new component and add it to the DOM as a child of .cards
 */
-
-/* Step 5: Now that you have your own card getting added to the DOM, either 
-          follow this link in your browser https://api.github.com/users/<Your github name>/followers 
-          , manually find some other users' github handles, or use the list found 
+const followersUsernames = [
+  `tetondan`,
+  `dustinmyers`,
+  `justsml`,
+  `luishrd`,
+  `bigknell`]
+/* Step 5: Now that you have your own card getting added to the DOM, either
+          follow this link in your browser https://api.github.com/users/<Your github name>/followers
+          , manually find some other users' github handles, or use the list found
           at the bottom of the page. Get at least 5 different Github usernames and add them as
           Individual strings to the friendsArray below.
-          
+
           Using that array, iterate over it, requesting data for each user, creating a new card for each
           user, and adding that card to the DOM.
 */
 
-const followersArray = [
-  "tetondan",
-  "dustinmyers",
-  "justsml",
-  "luishrd",
-  "bigknell"
-];
-
-followersArray.forEach(user => {
-  axios.get(`https://api.github.com/users/${user}`)
-    .then(data => {
-      const card = cardMaker(data.data)
-      const cards = document.querySelector('.cards')
-      cards.appendChild(card)
-    })
-    .catch(error => {
-      console.log(error, `This is an`)
-    })
-})
 
 /* Step 3: Create a function that accepts a single object as its only argument,
           Using DOM methods and properties, create a component that will return the following DOM element:
@@ -77,48 +69,50 @@ followersArray.forEach(user => {
 </div>
 
 */
-function cardMaker(data) {
-  // Create document elements
+
+function cardCreation(arg) {
+  // Element Creation
   const mainDiv = document.createElement('div');
-  const userimg = document.createElement('img');
-  const cardInfoDiv = document.createElement('div');
-  const header = document.createElement('h3');
+  const userImg = document.createElement('img');
+  const cardInfo = document.createElement('div');
+  const heading = document.createElement('h3');
   const username = document.createElement('p');
   const location = document.createElement('p');
   const profile = document.createElement('p');
   const profileLink = document.createElement('a');
-  const followersCount = document.createElement('p');
+  const followerCount = document.createElement('p');
   const followingCount = document.createElement('p');
-  const bio = document.createElement('p')
-  // Add classes to elements
+  const bio = document.createElement('p');
+  // Class Adding
   mainDiv.classList.add('card');
-  cardInfoDiv.classList.add('card-info');
-  header.classList.add('name');
-  username.classList.add('username')
-  // Append children to elements
-  mainDiv.appendChild(userimg)
-  mainDiv.appendChild(cardInfoDiv)
-  cardInfoDiv.appendChild(header)
-  cardInfoDiv.appendChild(username)
-  cardInfoDiv.appendChild(location)
-  cardInfoDiv.appendChild(profile)
-  profile.appendChild(profileLink)
-  cardInfoDiv.appendChild(followersCount)
-  cardInfoDiv.appendChild(followingCount)
-  cardInfoDiv.appendChild(bio)
-  // Text Content
-  userimg.src = data.avatar_url;
-  header.textContent = data.name;
-  username.textContent = data.login;
-  let ProfileLink = data.html_url;
-  profileLink.innerHTML = ProfileLink.link(data.url)
-  followersCount.textContent = `Followers: ${data.followers_url.length}`
-  followersCount.textContent = `Following: ${data.following_url.length}`
-  bio.textContent = data.bio
+  cardInfo.classList.add('card-info');
+  heading.classList.add('name');
+  username.classList.add('username');
+  // Element Content
+  userImg.src = arg.avatar_url;
+  heading.textContent = arg.name;
+  username.textContent = arg.login;
+  location.textContent = `Location: ${arg.location}`;
+  const ProfileLink = arg.html_url;
+  profile.innerHTML = `Profile: ${ProfileLink.link(arg.html_url)}`;
+  followerCount.textContent = `Followers: ${arg.followers}`
+  followingCount.textContent = `Followers: ${arg.following}`
+  bio.textContent = `Bio: ${arg.bio}`
+  // Nest Children
+  mainDiv.appendChild(userImg)
+  mainDiv.appendChild(cardInfo)
+  cardInfo.appendChild(heading)
+  cardInfo.appendChild(username)
+  cardInfo.appendChild(location)
+  cardInfo.appendChild(profile)
+  cardInfo.appendChild(followerCount)
+  cardInfo.appendChild(followingCount)
+  cardInfo.appendChild(bio)
+
   return mainDiv
-
-
 }
+
+
 
 /* List of LS Instructors Github username's:
   tetondan
