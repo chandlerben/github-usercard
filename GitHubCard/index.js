@@ -3,19 +3,11 @@
            (replacing the palceholder with your Github name):
            https://api.github.com/users/<your name>
 */
+const cardsElement = document.querySelector('.cards')
 axios.get(`https://api.github.com/users/chandlerben`)
   .then(response => {
     const myData = response.data
-    console.log(myData)
-    const cardsElement = document.querySelector('.cards')
     cardsElement.appendChild(cardCreation(myData))
-    followersUsernames.forEach(element => {
-      axios.get(`https://api.github.com/users/${element}`)
-        .then(response => {
-          const userData = response.data;
-          cardsElement.appendChild(cardCreation(userData))
-        })
-    })
 
   })
   .catch(error => {
@@ -39,6 +31,14 @@ const followersUsernames = [
   `justsml`,
   `luishrd`,
   `bigknell`]
+
+followersUsernames.forEach(element => {
+  axios.get(`https://api.github.com/users/${element}`)
+    .then(response => {
+      const userData = response.data;
+      cardsElement.appendChild(cardCreation(userData))
+    })
+})
 /* Step 5: Now that you have your own card getting added to the DOM, either
           follow this link in your browser https://api.github.com/users/<Your github name>/followers
           , manually find some other users' github handles, or use the list found
