@@ -1,7 +1,17 @@
+
 /* Step 1: using axios, send a GET request to the following URL 
            (replacing the palceholder with your Github name):
            https://api.github.com/users/<your name>
 */
+
+
+// axios.get('https://api.github.com/users/chandlerben')
+//   .then(res => {
+//     console.log(res)
+//   })
+//   .catch(err => {
+//     console.log(err)
+//   });
 
 /* Step 2: Inspect and study the data coming back, this is YOUR 
    github info! You will need to understand the structure of this 
@@ -29,13 +39,14 @@ const followersArray = [];
 /* Step 3: Create a function that accepts a single object as its only argument,
           Using DOM methods and properties, create a component that will return the following DOM element:
 
+
 <div class="card">
   <img src={image url of user} />
   <div class="card-info">
     <h3 class="name">{users name}</h3>
     <p class="username">{users user name}</p>
     <p>Location: {users location}</p>
-    <p>Profile:  
+    <p>Profile:
       <a href={address to users github page}>{address to users github page}</a>
     </p>
     <p>Followers: {users followers count}</p>
@@ -45,8 +56,96 @@ const followersArray = [];
 </div>
 
 */
+function cardCreator(gitData) {
+  const cardDiv = document.createElement('div');
+  const userImg = document.createElement('img');
+  const cardInfoDiv = document.createElement('div');
+  const nameHeader = document.createElement('h3');
+  const usernameP = document.createElement('p');
+  const locationP = document.createElement('p');
+  const profileP = document.createElement('p');
+  const profileLink = document.createElement('a');
+  const followersP = document.createElement('p');
+  const followingP = document.createElement('p');
+  const bioP = document.createElement('p');
+  cardDiv.classList.add('card');
+  userImg.setAttribute('src', gitData.avatar_url);
+  cardInfoDiv.classList.add('card-info');
+  nameHeader.classList.add('name');
+  nameHeader.textContent = gitData.name;
+  usernameP.classList.add('username');
+  usernameP.textContent = gitData.login;
+  locationP.textContent = `Location: ${gitData.location}`;
+  profileLink.setAttribute('href', gitData.html_url);
+  profileLink.textContent = gitData.html_url
+  profileP.textContent = `Profile: ${profileLink}`;
+  followersP.textContent = `Followers: ${gitData.followers}`;
+  followingP.textContent = `Following: ${gitData.following}`;
+  bioP.textContent = `Bio: ${gitData.bio}`;
+  cardInfoDiv.appendChild(nameHeader);
+  cardInfoDiv.appendChild(usernameP);
+  cardInfoDiv.appendChild(locationP);
+  cardInfoDiv.appendChild(profileP);
+  cardInfoDiv.appendChild(followersP);
+  cardInfoDiv.appendChild(followingP);
+  cardInfoDiv.appendChild(bioP);
+  cardDiv.appendChild(userImg);
+  cardDiv.appendChild(cardInfoDiv);
+  return cardDiv;
+}
 
-/* List of LS Instructors Github username's: 
+const cardsDiv = document.querySelector('.cards');
+
+axios.get('https://api.github.com/users/chandlerben')
+  .then(res => {
+    console.log(res)
+    cardsDiv.appendChild(cardCreator(res.data));
+    axios.get(res.data.followers_url)
+      .then(newRes => {
+        console.log(newRes.data)
+        newRes.data.forEach(follower => {
+          cardsDiv.appendChild(cardCreator(follower));
+        })
+      })
+      .catch(newErr => {
+        console.log(newErr);
+      });
+  })
+  .catch(err => {
+    console.log(err)
+  });
+
+
+const instructorsGithubHandles = ['tetondan',
+  'dustinmyers',
+  'justsml',
+  'luishrd',
+  'bigknell'
+]
+
+instructorsGithubHandles.forEach(handle => {
+  axios.get(`https://api.github.com/users/${handle}`)
+    .then(res => {
+      console.log(res)
+      cardsDiv.appendChild(cardCreator(res.data));
+      axios.get(res.data.followers_url)
+        .then(newRes => {
+          console.log(newRes.data)
+          newRes.data.forEach(follower => {
+            cardsDiv.appendChild(cardCreator(follower));
+          })
+        })
+        .catch(newErr => {
+          console.log(newErr);
+        });
+    })
+    .catch(err => {
+      console.log(err)
+    });
+})
+
+
+/* List of LS Instructors Github username's:
   tetondan
   dustinmyers
   justsml
